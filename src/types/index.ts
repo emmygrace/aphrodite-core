@@ -1,0 +1,77 @@
+import type { Selection } from 'd3-selection';
+
+export type SignIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+export type HouseIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+export type PlanetIndex = number;
+
+export interface SignData {
+  sign: SignIndex;
+  degree: number;
+}
+
+export interface HouseData {
+  house: HouseIndex;
+  cuspDegree: number;
+}
+
+export interface PlanetData {
+  planet: PlanetIndex;
+  sign: SignIndex;
+  degree: number;
+  house?: HouseIndex;
+}
+
+export interface AspectData {
+  planet1: PlanetIndex;
+  planet2: PlanetIndex;
+  aspect: string;
+  orb: number;
+}
+
+export interface RenderData {
+  signs?: SignData[];
+  houses?: HouseData[];
+  planets?: PlanetData[];
+  aspects?: AspectData[];
+}
+
+export interface Indexes {
+  signs?: SignIndex[];
+  houses?: HouseIndex[];
+  planets?: PlanetIndex[];
+}
+
+export interface VisualConfig {
+  ringWidth?: number;
+  ringSpacing?: number;
+  signColors?: string[];
+  houseColors?: string[];
+  planetColors?: string[];
+  aspectColors?: Record<string, string>;
+  aspectStrokeWidth?: number;
+  backgroundColor?: string;
+  strokeColor?: string;
+  strokeWidth?: number;
+}
+
+export interface GlyphConfig {
+  signGlyphs?: Partial<Record<SignIndex, string>>;
+  planetGlyphs?: Record<PlanetIndex, string>;
+  aspectGlyphs?: Record<string, string>;
+  glyphSize?: number;
+  glyphFont?: string;
+}
+
+export interface ChartOptions {
+  centerX: number;
+  centerY: number;
+  rotationOffset: number;
+  visualConfig?: VisualConfig;
+  glyphConfig?: GlyphConfig;
+  layerId?: string;
+}
+
+export type RingType = 'signs' | 'houses' | 'planets' | 'aspects' | 'outer';
+
+export type D3Selection = Selection<SVGGElement, unknown, null, undefined>;
+

@@ -1,0 +1,54 @@
+{
+  "name": "@gaia-tools/aphrodite",
+  "version": "0.1.0",
+  "description": "TypeScript + D3 + SVG library for rendering astrological charts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "astrology",
+    "chart",
+    "d3",
+    "svg",
+    "typescript"
+  ],
+  "author": "Emmy Grace",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:emmygrace/aphrodite-core.git"
+  },
+  "homepage": "https://github.com/emmygrace/aphrodite-core",
+  "bugs": {
+    "url": "https://github.com/emmygrace/aphrodite-core/issues"
+  },
+  "peerDependencies": {
+    "d3": "^7.8.5"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/jest": "^29.5.12",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.3",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@types/d3-selection": "^3.0.11"
+  }
+}

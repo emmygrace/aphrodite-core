@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aphrodite Chart Library - Test Page</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .chart-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        svg {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Aphrodite Chart Library - Test Page</h1>
+    <div class="charts-container">
+        <div class="chart-wrapper">
+            <div class="chart-title">Chart 1: Basic Natal Chart</div>
+            <div class="chart-container" id="chart-1"></div>
+        </div>
+        <div class="chart-wrapper">
+            <div class="chart-title">Chart 2: Houses Only</div>
+            <div class="chart-container" id="chart-2"></div>
+        </div>
+        <div class="chart-wrapper">
+            <div class="chart-title">Chart 3: Planets & Aspects</div>
+            <div class="chart-container" id="chart-3"></div>
+        </div>
+        <div class="chart-wrapper">
+            <div class="chart-title">Chart 4: Full Chart with Rotation</div>
+            <div class="chart-container" id="chart-4"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the library (assuming it's built and available)
+        // For testing, we'll need to load it from dist/index.js
+        // Since we're using ES modules, we need to adjust the import
+        
+        // For now, let's create a simple loader that works with the compiled code
+        // We'll use a dynamic import or load it as a script
+        
+        // Chart 1: Basic Natal Chart
+        function createChart1() {
+            const container = d3.select('#chart-1');
+            const svg = container.append('svg')
+                .attr('width', 600)
+                .attr('height', 600);
+            
+            const g = svg.append('g')
+                .attr('transform', 'translate(300, 300)');
+            
+            // Sample data for Chart 1
+            const renderData = {
+                signs: [
+                    { sign: 0, degree: 0 },
+                    { sign: 1, degree: 30 },
+                    { sign: 2, degree: 60 },
+                    { sign: 3, degree: 90 },
+                    { sign: 4, degree: 120 },
+                    { sign: 5, degree: 150 },
+                    { sign: 6, degree: 180 },
+                    { sign: 7, degree: 210 },
+                    { sign: 8, degree: 240 },
+                    { sign: 9, degree: 270 },
+                    { sign: 10, degree: 300 },
+                    { sign: 11, degree: 330 },
+                ],
+                houses: [
+                    { house: 0, cuspDegree: 15 },
+                    { house: 1, cuspDegree: 45 },
+                    { house: 2, cuspDegree: 75 },
+                    { house: 3, cuspDegree: 105 },
+                    { house: 4, cuspDegree: 135 },
+                    { house: 5, cuspDegree: 165 },
+                    { house: 6, cuspDegree: 195 },
+                    { house: 7, cuspDegree: 225 },
+                    { house: 8, cuspDegree: 255 },
+                    { house: 9, cuspDegree: 285 },
+                    { house: 10, cuspDegree: 315 },
+                    { house: 11, cuspDegree: 345 },
+                ],
+                planets: [
+                    { planet: 0, sign: 0, degree: 5, house: 0 },
+                    { planet: 1, sign: 3, degree: 95, house: 3 },
+                    { planet: 2, sign: 6, degree: 185, house: 6 },
+                    { planet: 3, sign: 9, degree: 275, house: 9 },
+                ],
+            };
+            
+            const indexes = {
+                signs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                houses: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                planets: [0, 1, 2, 3],
+            };
+            
+            // We'll need to load the actual library here
+            // For now, this is a placeholder structure
+            console.log('Chart 1 data prepared', renderData);
+        }
+        
+        // Chart 2: Houses Only
+        function createChart2() {
+            const container = d3.select('#chart-2');
+            const svg = container.append('svg')
+                .attr('width', 600)
+                .attr('height', 600);
+            
+            const g = svg.append('g')
+                .attr('transform', 'translate(300, 300)');
+            
+            const renderData = {
+                houses: [
+                    { house: 0, cuspDegree: 0 },
+                    { house: 1, cuspDegree: 30 },
+                    { house: 2, cuspDegree: 60 },
+                    { house: 3, cuspDegree: 90 },
+                    { house: 4, cuspDegree: 120 },
+                    { house: 5, cuspDegree: 150 },
+                    { house: 6, cuspDegree: 180 },
+                    { house: 7, cuspDegree: 210 },
+                    { house: 8, cuspDegree: 240 },
+                    { house: 9, cuspDegree: 270 },
+                    { house: 10, cuspDegree: 300 },
+                    { house: 11, cuspDegree: 330 },
+                ],
+            };
+            
+            const indexes = {
+                houses: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            };
+            
+            console.log('Chart 2 data prepared', renderData);
+        }
+        
+        // Chart 3: Planets & Aspects
+        function createChart3() {
+            const container = d3.select('#chart-3');
+            const svg = container.append('svg')
+                .attr('width', 600)
+                .attr('height', 600);
+            
+            const g = svg.append('g')
+                .attr('transform', 'translate(300, 300)');
+            
+            const renderData = {
+                planets: [
+                    { planet: 0, sign: 0, degree: 10 },
+                    { planet: 1, sign: 2, degree: 70 },
+                    { planet: 2, sign: 4, degree: 130 },
+                    { planet: 3, sign: 6, degree: 190 },
+                    { planet: 4, sign: 8, degree: 250 },
+                ],
+                aspects: [
+                    { planet1: 0, planet2: 2, aspect: 'trine', orb: 2 },
+                    { planet1: 1, planet2: 3, aspect: 'square', orb: 3 },
+                    { planet1: 2, planet2: 4, aspect: 'sextile', orb: 1 },
+                ],
+            };
+            
+            const indexes = {
+                planets: [0, 1, 2, 3, 4],
+            };
+            
+            console.log('Chart 3 data prepared', renderData);
+        }
+        
+        // Chart 4: Full Chart with Rotation
+        function createChart4() {
+            const container = d3.select('#chart-4');
+            const svg = container.append('svg')
+                .attr('width', 600)
+                .attr('height', 600);
+            
+            const g = svg.append('g')
+                .attr('transform', 'translate(300, 300)');
+            
+            const renderData = {
+                signs: [
+                    { sign: 0, degree: 0 },
+                    { sign: 1, degree: 30 },
+                    { sign: 2, degree: 60 },
+                    { sign: 3, degree: 90 },
+                    { sign: 4, degree: 120 },
+                    { sign: 5, degree: 150 },
+                    { sign: 6, degree: 180 },
+                    { sign: 7, degree: 210 },
+                    { sign: 8, degree: 240 },
+                    { sign: 9, degree: 270 },
+                    { sign: 10, degree: 300 },
+                    { sign: 11, degree: 330 },
+                ],
+                houses: [
+                    { house: 0, cuspDegree: 20 },
+                    { house: 1, cuspDegree: 50 },
+                    { house: 2, cuspDegree: 80 },
+                    { house: 3, cuspDegree: 110 },
+                    { house: 4, cuspDegree: 140 },
+                    { house: 5, cuspDegree: 170 },
+                    { house: 6, cuspDegree: 200 },
+                    { house: 7, cuspDegree: 230 },
+                    { house: 8, cuspDegree: 260 },
+                    { house: 9, cuspDegree: 290 },
+                    { house: 10, cuspDegree: 320 },
+                    { house: 11, cuspDegree: 350 },
+                ],
+                planets: [
+                    { planet: 0, sign: 1, degree: 35, house: 1 },
+                    { planet: 1, sign: 4, degree: 125, house: 4 },
+                    { planet: 2, sign: 7, degree: 215, house: 7 },
+                    { planet: 3, sign: 10, degree: 305, house: 10 },
+                ],
+                aspects: [
+                    { planet1: 0, planet2: 2, aspect: 'opposition', orb: 5 },
+                    { planet1: 1, planet2: 3, aspect: 'trine', orb: 3 },
+                ],
+            };
+            
+            const indexes = {
+                signs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                houses: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                planets: [0, 1, 2, 3],
+            };
+            
+            console.log('Chart 4 data prepared', renderData);
+        }
+        
+        // Load the library and render charts
+        // Note: This requires serving the page via HTTP server (not file://)
+        // Run: python3 -m http.server 8000 or npx serve
+        // Then open: http://localhost:8000/test.html
+        
+        import('./dist/index.js').then((module) => {
+            console.log('Module loaded:', module);
+            const { ChartRenderer } = module;
+            console.log('ChartRenderer:', ChartRenderer);
+            
+            // Chart 1
+            const container1 = d3.select('#chart-1');
+            const svg1 = container1.append('svg')
+                .attr('width', 600)
+                .attr('height', 600);
+            const g1 = svg1.append('g').attr('transform', 'translate(300, 300)');
+            const renderer1 = new ChartRenderer(g1);
+            const renderData1 = {
+                signs: Array.from({ length: 12 }, (_, i) => ({ sign: i, degree: i * 30 })),
+                houses: Array.from({ length: 12 }, (_, i) => ({ house: i, cuspDegree: i * 30 + 15 })),
+                planets: [
+                    { planet: 0, sign: 0, degree: 5, house: 0 },
+                    { planet: 1, sign: 3, degree: 95, house: 3 },
+                    { planet: 2, sign: 6, degree: 185, house: 6 },
+                    { planet: 3, sign: 9, degree: 275, house: 9 },
+                ],
+            };
+            const indexes1 = {
+                signs: Array.from({ length: 12 }, (_, i) => i),
+                houses: Array.from({ length: 12 }, (_, i) => i),
+                planets: [0, 1, 2, 3],
+            };
+            renderer1.render(renderData1, indexes1, {
+                centerX: 0,
+                centerY: 0,
+                rotationOffset: 0,
+                layerId: 'chart1',
+            });
+            
+            // Chart 2
+            const container2 = d3.select('#chart-2');
+            const svg2 = container2.append('svg')
+                .attr('width', 600)
+                .attr('height', 600);
+            const g2 = svg2.append('g').attr('transform', 'translate(300, 300)');
+            const renderer2 = new ChartRenderer(g2);
+            const renderData2 = {
+                houses: Array.from({ length: 12 }, (_, i) => ({ house: i, cuspDegree: i * 30 })),
+            };
+            const indexes2 = {
+                houses: Array.from({ length: 12 }, (_, i) => i),
+            };
+            renderer2.render(renderData2, indexes2, {
+                centerX: 0,
+                centerY: 0,
+                rotationOffset: 0,
+                layerId: 'chart2',
+            });
+            
+            // Chart 3
+            const container3 = d3.select('#chart-3');
+            const svg3 = container3.append('svg')
+                .attr('width', 600)
+                .attr('height', 600);
+            const g3 = svg3.append('g').attr('transform', 'translate(300, 300)');
+            const renderer3 = new ChartRenderer(g3);
+            const renderData3 = {
+                planets: [
+                    { planet: 0, sign: 0, degree: 10 },
+                    { planet: 1, sign: 2, degree: 70 },
+                    { planet: 2, sign: 4, degree: 130 },
+                    { planet: 3, sign: 6, degree: 190 },
+                    { planet: 4, sign: 8, degree: 250 },
+                ],
+                aspects: [
+                    { planet1: 0, planet2: 2, aspect: 'trine', orb: 2 },
+                    { planet1: 1, planet2: 3, aspect: 'square', orb: 3 },
+                    { planet1: 2, planet2: 4, aspect: 'sextile', orb: 1 },
+                ],
+            };
+            const indexes3 = {
+                planets: [0, 1, 2, 3, 4],
+            };
+            renderer3.render(renderData3, indexes3, {
+                centerX: 0,
+                centerY: 0,
+                rotationOffset: 0,
+                layerId: 'chart3',
+            });
+            
+            // Chart 4
+            const container4 = d3.select('#chart-4');
+            const svg4 = container4.append('svg')
+                .attr('width', 600)
+                .attr('height', 600);
+            const g4 = svg4.append('g').attr('transform', 'translate(300, 300)');
+            const renderer4 = new ChartRenderer(g4);
+            const renderData4 = {
+                signs: Array.from({ length: 12 }, (_, i) => ({ sign: i, degree: i * 30 })),
+                houses: Array.from({ length: 12 }, (_, i) => ({ house: i, cuspDegree: i * 30 + 20 })),
+                planets: [
+                    { planet: 0, sign: 1, degree: 35, house: 1 },
+                    { planet: 1, sign: 4, degree: 125, house: 4 },
+                    { planet: 2, sign: 7, degree: 215, house: 7 },
+                    { planet: 3, sign: 10, degree: 305, house: 10 },
+                ],
+                aspects: [
+                    { planet1: 0, planet2: 2, aspect: 'opposition', orb: 5 },
+                    { planet1: 1, planet2: 3, aspect: 'trine', orb: 3 },
+                ],
+            };
+            const indexes4 = {
+                signs: Array.from({ length: 12 }, (_, i) => i),
+                houses: Array.from({ length: 12 }, (_, i) => i),
+                planets: [0, 1, 2, 3],
+            };
+            renderer4.render(renderData4, indexes4, {
+                centerX: 0,
+                centerY: 0,
+                rotationOffset: 45, // Rotated chart
+                layerId: 'chart4',
+            });
+            
+        }).catch((error) => {
+            console.error('Error loading library:', error);
+            console.error('Error stack:', error.stack);
+            // Fallback: show error message
+            document.querySelectorAll('.chart-container').forEach((container) => {
+                container.innerHTML = `<p style="color: red;">Error loading library: ${error.message}<br>Check browser console for details.</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
+
