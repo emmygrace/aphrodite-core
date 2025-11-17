@@ -41,26 +41,8 @@ export interface Indexes {
   planets?: PlanetIndex[];
 }
 
-export interface VisualConfig {
-  ringWidth?: number;
-  ringSpacing?: number;
-  signColors?: string[];
-  houseColors?: string[];
-  planetColors?: string[];
-  aspectColors?: Record<string, string>;
-  aspectStrokeWidth?: number;
-  backgroundColor?: string;
-  strokeColor?: string;
-  strokeWidth?: number;
-}
-
-export interface GlyphConfig {
-  signGlyphs?: Partial<Record<SignIndex, string>>;
-  planetGlyphs?: Record<PlanetIndex, string>;
-  aspectGlyphs?: Record<string, string>;
-  glyphSize?: number;
-  glyphFont?: string;
-}
+// Re-export VisualConfig and GlyphConfig from aphrodite-shared
+export type { VisualConfig, GlyphConfig } from '@gaia-tools/aphrodite-shared/configs';
 
 export interface ChartOptions {
   centerX: number;

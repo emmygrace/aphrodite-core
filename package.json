@@ -49,6 +49,7 @@
     "dist"
   ],
   "dependencies": {
-    "@types/d3-selection": "^3.0.11"
+    "@types/d3-selection": "^3.0.11",
+    "@gaia-tools/aphrodite-shared": "file:../aphrodite-shared"
   }
 }
