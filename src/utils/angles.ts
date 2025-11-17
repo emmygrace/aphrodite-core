@@ -1,3 +1,7 @@
+import type { ViewFrame } from '@gaia-tools/aphrodite-shared/orientation';
+import type { ChartDataForOrientation } from './viewFrame.js';
+import { convertToScreenAngle } from './viewFrame.js';
+
 /**
  * Converts degrees to radians
  */
@@ -68,5 +72,26 @@ export function polarToCartesian(
   const x = centerX + radius * Math.cos(angleRad);
   const y = centerY + radius * Math.sin(angleRad);
   return { x, y };
+}
+
+/**
+ * Unified function to convert astrological longitude to SVG screen angle.
+ * Supports both legacy rotationOffset and new ViewFrame system.
+ */
+export function longitudeToScreenAngle(
+  longitude: number,
+  options: {
+    rotationOffset?: number;
+    viewFrame?: ViewFrame;
+    chartData?: ChartDataForOrientation;
+  }
+): number {
+  // Use ViewFrame if provided
+  if (options.viewFrame && options.chartData) {
+    return convertToScreenAngle(longitude, options.viewFrame, options.chartData);
+  }
+
+  // Fallback to legacy rotationOffset
+  return astroToSvgAngle(longitude, options.rotationOffset ?? 0);
 }
 

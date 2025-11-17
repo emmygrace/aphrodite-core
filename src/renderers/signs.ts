@@ -1,15 +1,14 @@
 // d3 is expected to be available as a global variable (loaded from CDN)
 declare const d3: any;
-import { D3Selection, SignData, SignIndex, VisualConfig, GlyphConfig } from '../types/index.js';
-import { astroToSvgAngle, polarToCartesian } from '../utils/angles.js';
+import { D3Selection, SignData, SignIndex, VisualConfig, GlyphConfig, ChartOptions } from '../types/index.js';
+import { longitudeToScreenAngle, polarToCartesian } from '../utils/angles.js';
 import { getRingRadii, getRingCenterRadius } from '../utils/rings.js';
+import { buildChartDataFromRenderData, type ChartDataForOrientation } from '../utils/viewFrame.js';
 
-interface RenderOptions {
+interface RenderOptions extends ChartOptions {
   visualConfig: VisualConfig;
   glyphConfig: GlyphConfig;
-  rotationOffset: number;
-  centerX: number;
-  centerY: number;
+  chartData?: ChartDataForOrientation;
 }
 
 export function renderSignsRing(
@@ -18,7 +17,7 @@ export function renderSignsRing(
   indexes: SignIndex[],
   options: RenderOptions
 ): void {
-  const { visualConfig, glyphConfig, rotationOffset = 0 } = options;
+  const { visualConfig, glyphConfig } = options;
   const ringIndex = 0; // Signs are typically the outermost or first ring
   const { innerRadius, outerRadius } = getRingRadii(ringIndex, visualConfig);
   const centerRadius = getRingCenterRadius(ringIndex, visualConfig);
@@ -32,8 +31,16 @@ export function renderSignsRing(
     const startDegree = signData.degree;
     const endDegree = (startDegree + 30) % 360; // Each sign is 30 degrees
 
-    const startAngle = astroToSvgAngle(startDegree, rotationOffset);
-    const endAngle = astroToSvgAngle(endDegree, rotationOffset);
+    const startAngle = longitudeToScreenAngle(startDegree, {
+      rotationOffset: options.rotationOffset,
+      viewFrame: options.viewFrame,
+      chartData: options.chartData,
+    });
+    const endAngle = longitudeToScreenAngle(endDegree, {
+      rotationOffset: options.rotationOffset,
+      viewFrame: options.viewFrame,
+      chartData: options.chartData,
+    });
 
     // Create arc path
     const arc = d3

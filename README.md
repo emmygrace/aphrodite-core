@@ -257,7 +257,21 @@ Options for rendering a chart.
 interface ChartOptions {
   centerX: number;              // X coordinate of chart center
   centerY: number;              // Y coordinate of chart center
-  rotationOffset: number;       // Rotation offset in degrees
+  /**
+   * @deprecated Use viewFrame instead. This is kept for backward compatibility.
+   * If viewFrame is provided, rotationOffset is ignored.
+   */
+  rotationOffset?: number;       // Rotation offset in degrees
+  /**
+   * ViewFrame for orientation. If provided, overrides rotationOffset.
+   * See Orientation section below for details.
+   */
+  viewFrame?: ViewFrame;
+  /**
+   * Lock rules for animation. Only used if viewFrame is provided.
+   * See Orientation section below for details.
+   */
+  locks?: LockRule[];
   visualConfig?: VisualConfig;  // Visual styling configuration
   glyphConfig?: GlyphConfig;     // Glyph configuration
   layerId?: string;             // Optional layer identifier for grouping
@@ -476,16 +490,103 @@ renderer.render(renderData, indexes, {
 });
 ```
 
-### Rotated Chart
+### Rotated Chart (Legacy)
 
 ```typescript
 // Rotate chart 90 degrees (e.g., for different house systems)
+// Note: This uses the legacy rotationOffset. See Orientation section for modern approach.
 renderer.render(renderData, indexes, {
   centerX: 0,
   centerY: 0,
   rotationOffset: 90
 });
 ```
+
+## Orientation System
+
+Aphrodite provides a flexible orientation system that allows you to control how charts are displayed and what elements remain fixed during animations. This system replaces the simple `rotationOffset` with a more powerful `ViewFrame` and `LockRule` system.
+
+### ViewFrame
+
+A `ViewFrame` defines how world longitudes are mapped to screen angles. It specifies:
+- **Reference Frame**: The coordinate system to use (`'ecliptic'`, `'houses'`, `'signs'`, or `'angles'`)
+- **Anchor**: Which element (object, house, sign, or angle) is pinned to a specific screen position
+- **Screen Angle**: Where the anchor appears (0° = 3 o'clock, 90° = 12 o'clock, 180° = 9 o'clock, 270° = 6 o'clock)
+- **Direction**: Clockwise (`'cw'`) or counterclockwise (`'ccw'`) sign order
+- **Optional flips**: Radial and angular flips for mirroring
+
+### LockRules
+
+`LockRule`s define what elements remain visually fixed vs. moving during animation:
+- **Subject**: What to lock (objects, houses, signs, or angles)
+- **Frame**: The coordinate system for the lock (`'world'`, `'houses'`, `'signs'`, or `'screen'`)
+- **Mode**: `'exact'` (lock to exact position) or `'follow-anchor'` (maintain offset from anchor)
+
+### Using Presets
+
+The easiest way to use the orientation system is with presets:
+
+```typescript
+import { presetAscLeft, presetMcTop, presetAriesTop } from '@gaia-tools/aphrodite-shared/orientation';
+
+// ASC at 9 o'clock (traditional Western astrology)
+renderer.render(renderData, indexes, {
+  centerX: 400,
+  centerY: 400,
+  viewFrame: presetAscLeft.frame,
+  locks: presetAscLeft.locks,
+});
+
+// MC at top (12 o'clock)
+renderer.render(renderData, indexes, {
+  centerX: 400,
+  centerY: 400,
+  viewFrame: presetMcTop.frame,
+  locks: presetMcTop.locks,
+});
+
+// Aries at top (zodiac-centric view)
+renderer.render(renderData, indexes, {
+  centerX: 400,
+  centerY: 400,
+  viewFrame: presetAriesTop.frame,
+  locks: presetAriesTop.locks,
+});
+```
+
+### Custom ViewFrame
+
+You can also create custom ViewFrames:
+
+```typescript
+import type { ViewFrame } from '@gaia-tools/aphrodite-shared/orientation';
+
+const customFrame: ViewFrame = {
+  referenceFrame: 'houses',
+  anchor: { kind: 'angle', type: 'ASC' },
+  screenAngleDeg: 180, // 9 o'clock
+  direction: 'ccw',
+};
+
+renderer.render(renderData, indexes, {
+  centerX: 400,
+  centerY: 400,
+  viewFrame: customFrame,
+});
+```
+
+### Available Presets
+
+- `presetAscLeft` - ASC at 9 o'clock, houses fixed
+- `presetAscRight` - ASC at 3 o'clock, houses fixed
+- `presetMcTop` - MC at 12 o'clock, houses follow MC
+- `presetAriesTop` - Aries at 12 o'clock, signs fixed
+- `presetFixedHouses` - Houses locked to screen
+- `presetFixedSigns` - Signs locked to screen
+- `presetSunLocked` - Sun centered, other planets animate
+- `presetBiwheelNatalTransit` - Template for biwheel charts
+
+See `@gaia-tools/aphrodite-shared/orientation` for the full preset catalog.
 
 ### Updating a Chart
 

@@ -13,6 +13,7 @@ import { renderSignsRing } from '../renderers/signs.js';
 import { renderHousesRing } from '../renderers/houses.js';
 import { renderPlanetsRing } from '../renderers/planets.js';
 import { renderAspectsRing } from '../renderers/aspects.js';
+import { buildChartDataFromRenderData } from '../utils/viewFrame.js';
 
 interface RenderOptions extends Omit<ChartOptions, 'visualConfig' | 'glyphConfig'> {
   visualConfig: VisualConfig;
@@ -34,6 +35,11 @@ export class ChartRenderer {
     indexes: Indexes,
     options: ChartOptions
   ): void {
+    // Build chart data for orientation if ViewFrame is used
+    const chartData = options.viewFrame
+      ? buildChartDataFromRenderData(renderData)
+      : undefined;
+
     // Merge configs are done in renderRing
 
     // Create a layer group if layerId is specified
@@ -54,16 +60,16 @@ export class ChartRenderer {
 
     // Render each ring type
     if (renderData.signs && indexes.signs) {
-      this.renderRing('signs', renderData, indexes, options);
+      this.renderRing('signs', renderData, indexes, options, chartData);
     }
     if (renderData.houses && indexes.houses) {
-      this.renderRing('houses', renderData, indexes, options);
+      this.renderRing('houses', renderData, indexes, options, chartData);
     }
     if (renderData.planets && indexes.planets) {
-      this.renderRing('planets', renderData, indexes, options);
+      this.renderRing('planets', renderData, indexes, options, chartData);
     }
     if (renderData.aspects && renderData.planets) {
-      this.renderRing('aspects', renderData, indexes, options);
+      this.renderRing('aspects', renderData, indexes, options, chartData);
     }
   }
 
@@ -74,7 +80,8 @@ export class ChartRenderer {
     ring: RingType,
     renderData: RenderData,
     indexes: Indexes,
-    options: ChartOptions
+    options: ChartOptions,
+    chartData?: ReturnType<typeof buildChartDataFromRenderData>
   ): void {
     const visualConfig = mergeVisualConfig(options.visualConfig);
     const glyphConfig = mergeGlyphConfig(options.glyphConfig);
@@ -97,6 +104,7 @@ export class ChartRenderer {
       ...options,
       visualConfig,
       glyphConfig,
+      chartData,
     };
 
     switch (ring) {

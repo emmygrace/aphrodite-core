@@ -44,10 +44,29 @@ export interface Indexes {
 // Re-export VisualConfig and GlyphConfig from aphrodite-shared
 export type { VisualConfig, GlyphConfig } from '@gaia-tools/aphrodite-shared/configs';
 
+// Re-export orientation types
+export type {
+  ViewFrame,
+  LockRule,
+  OrientationPreset,
+} from '@gaia-tools/aphrodite-shared/orientation';
+
 export interface ChartOptions {
   centerX: number;
   centerY: number;
-  rotationOffset: number;
+  /**
+   * @deprecated Use viewFrame instead. This is kept for backward compatibility.
+   * If viewFrame is provided, rotationOffset is ignored.
+   */
+  rotationOffset?: number;
+  /**
+   * ViewFrame for orientation. If provided, overrides rotationOffset.
+   */
+  viewFrame?: ViewFrame;
+  /**
+   * Lock rules for animation. Only used if viewFrame is provided.
+   */
+  locks?: LockRule[];
   visualConfig?: VisualConfig;
   glyphConfig?: GlyphConfig;
   layerId?: string;

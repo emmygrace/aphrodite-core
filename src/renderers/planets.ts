@@ -1,13 +1,12 @@
-import { D3Selection, PlanetData, PlanetIndex, VisualConfig, GlyphConfig } from '../types/index.js';
-import { astroToSvgAngle, polarToCartesian } from '../utils/angles.js';
+import { D3Selection, PlanetData, PlanetIndex, VisualConfig, GlyphConfig, ChartOptions } from '../types/index.js';
+import { longitudeToScreenAngle, polarToCartesian } from '../utils/angles.js';
 import { getRingCenterRadius } from '../utils/rings.js';
+import { type ChartDataForOrientation } from '../utils/viewFrame.js';
 
-interface RenderOptions {
+interface RenderOptions extends ChartOptions {
   visualConfig: VisualConfig;
   glyphConfig: GlyphConfig;
-  rotationOffset: number;
-  centerX: number;
-  centerY: number;
+  chartData?: ChartDataForOrientation;
 }
 
 export function renderPlanetsRing(
@@ -16,7 +15,7 @@ export function renderPlanetsRing(
   indexes: PlanetIndex[],
   options: RenderOptions
 ): void {
-  const { visualConfig, glyphConfig, rotationOffset = 0 } = options;
+  const { visualConfig, glyphConfig } = options;
   const ringIndex = 2; // Planets are typically the third ring
   const centerRadius = getRingCenterRadius(ringIndex, visualConfig);
 
@@ -26,7 +25,11 @@ export function renderPlanetsRing(
   // Render each planet
   planets.forEach((planetData, idx) => {
     const planetIndex = indexes[idx] ?? planetData.planet;
-    const angle = astroToSvgAngle(planetData.degree, rotationOffset);
+    const angle = longitudeToScreenAngle(planetData.degree, {
+      rotationOffset: options.rotationOffset,
+      viewFrame: options.viewFrame,
+      chartData: options.chartData,
+    });
     const { x, y } = polarToCartesian(angle, centerRadius);
 
     // Get color for this planet

@@ -1,13 +1,12 @@
-import { D3Selection, AspectData, PlanetData, VisualConfig, GlyphConfig } from '../types/index.js';
-import { astroToSvgAngle, polarToCartesian } from '../utils/angles.js';
+import { D3Selection, AspectData, PlanetData, VisualConfig, GlyphConfig, ChartOptions } from '../types/index.js';
+import { longitudeToScreenAngle, polarToCartesian } from '../utils/angles.js';
 import { getRingCenterRadius } from '../utils/rings.js';
+import { type ChartDataForOrientation } from '../utils/viewFrame.js';
 
-interface RenderOptions {
+interface RenderOptions extends ChartOptions {
   visualConfig: VisualConfig;
   glyphConfig: GlyphConfig;
-  rotationOffset: number;
-  centerX: number;
-  centerY: number;
+  chartData?: ChartDataForOrientation;
 }
 
 export function renderAspectsRing(
@@ -16,7 +15,7 @@ export function renderAspectsRing(
   options: RenderOptions,
   planets?: PlanetData[]
 ): void {
-  const { visualConfig, glyphConfig, rotationOffset = 0 } = options;
+  const { visualConfig, glyphConfig } = options;
   const ringIndex = 2; // Aspects use the same ring as planets
   const centerRadius = getRingCenterRadius(ringIndex, visualConfig);
 
@@ -30,7 +29,11 @@ export function renderAspectsRing(
   // Create a map of planet index to position
   const planetPositions = new Map<number, { x: number; y: number }>();
   planets.forEach((planet) => {
-    const angle = astroToSvgAngle(planet.degree, rotationOffset);
+    const angle = longitudeToScreenAngle(planet.degree, {
+      rotationOffset: options.rotationOffset,
+      viewFrame: options.viewFrame,
+      chartData: options.chartData,
+    });
     const pos = polarToCartesian(angle, centerRadius);
     planetPositions.set(planet.planet, pos);
   });
