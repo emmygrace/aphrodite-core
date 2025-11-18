@@ -44,6 +44,14 @@ const chart = new ChartWheel(container, {
 });
 ```
 
+### Vedic overlays
+
+- When the backend response includes `renderData.vedic`, the existing rendering pipeline can show nakshatra rings and divisional overlays via the new `Vedic Natal Wheel` definition from `@gaia-tools/aphrodite-shared`.
+- `WheelAssembler` understands the extra data sources:
+  - `static_nakshatras` → renders the 27 equal nakshatra segments as a ring (treated like signs for coloring/labels).
+  - `layer_varga_planets` → draws planet glyphs for D-charts (Navamsa, Dasamsa, etc.) returned under `vedic.layers[layerId].vargas[vargaId]`.
+- No ChartWheel API changes are required—just load the Vedic wheel definition and feed it alongside the standard `RenderResponse`.
+
 ## ChartWheel API
 
 `ChartWheel` is the primary chart rendering class for working with `RenderResponse` data from the API. It's framework-agnostic and works with any JavaScript framework or vanilla JS.
