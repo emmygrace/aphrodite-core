@@ -9,7 +9,7 @@ import type {
   PlanetRingItem,
   HouseRingItem,
   SignRingItem,
-} from '@gaia-tools/coeus-api-client';
+} from '@gaia-tools/iris-core';
 
 // Note: CSS should be imported separately by the consumer
 // import './ChartWheel.css';

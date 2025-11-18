@@ -30,9 +30,11 @@
     "url": "https://github.com/emmygrace/aphrodite-core/issues"
   },
   "peerDependencies": {
+    "@gaia-tools/iris-core": "^0.1.0",
     "d3": "^7.8.5"
   },
   "devDependencies": {
+    "@gaia-tools/iris-core": "file:../iris-core",
     "@types/d3": "^7.4.3",
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
@@ -51,7 +53,6 @@
   ],
   "dependencies": {
     "@types/d3-selection": "^3.0.11",
-    "@gaia-tools/aphrodite-shared": "file:../aphrodite-shared",
-    "@gaia-tools/coeus-api-client": "file:../coeus-api-client"
+    "@gaia-tools/aphrodite-shared": "file:../aphrodite-shared"
   }
 }
