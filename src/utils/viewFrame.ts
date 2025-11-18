@@ -44,58 +44,6 @@ export interface ChartDataForOrientation {
   angleLongitudes?: Map<AngleType, number>;
 }
 
-/**
- * Build chart data from RenderData for orientation calculations
- */
-import type { RenderData, HouseData, PlanetData } from '../types/index.js';
-
-export function buildChartDataFromRenderData(
-  renderData: RenderData
-): ChartDataForOrientation {
-  const planetLongitudes = new Map<number | string, number>();
-  const houseCusps = new Map<HouseNumber, number>();
-  const angleLongitudes = new Map<AngleType, number>();
-
-  // Extract planet longitudes
-  if (renderData.planets) {
-    for (const planet of renderData.planets) {
-      planetLongitudes.set(planet.planet, planet.degree);
-    }
-  }
-
-  // Extract house cusps (convert from 0-11 index to 1-12 house number)
-  if (renderData.houses) {
-    for (const house of renderData.houses) {
-      const houseNumber = ((house.house + 1) % 12) || 12 as HouseNumber;
-      houseCusps.set(houseNumber, house.cuspDegree);
-    }
-  }
-
-  // Extract angles (ASC, MC, etc.)
-  // Note: We need to calculate these from houses if not provided directly
-  // ASC is typically House 1 cusp, MC is House 10 cusp
-  if (renderData.houses && renderData.houses.length > 0) {
-    const house1 = renderData.houses.find((h) => h.house === 0); // House 1 is index 0
-    const house10 = renderData.houses.find((h) => h.house === 9); // House 10 is index 9
-
-    if (house1) {
-      angleLongitudes.set('ASC', house1.cuspDegree);
-      // DESC is opposite ASC
-      angleLongitudes.set('DESC', (house1.cuspDegree + 180) % 360);
-    }
-    if (house10) {
-      angleLongitudes.set('MC', house10.cuspDegree);
-      // IC is opposite MC
-      angleLongitudes.set('IC', (house10.cuspDegree + 180) % 360);
-    }
-  }
-
-  return {
-    planetLongitudes,
-    houseCusps,
-    angleLongitudes,
-  };
-}
 
 /**
  * Create an AnchorLongitudeResolver from chart data
