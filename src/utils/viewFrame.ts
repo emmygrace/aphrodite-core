@@ -269,31 +269,28 @@ function ruleTriggered(
       const currentHouse = getHouseForLongitude(ascLon, chart.houseCusps);
       const targetHouse = trigger.house;
 
-      // Check if we've already applied this rule
+      if (currentHouse === null) {
+        return false;
+      }
+
+      // Check if we've already applied this rule (for one-time transitions)
       if (state.appliedRuleIds.has(rule.id)) {
         return false;
       }
 
-      // Trigger when ASC moves from target house to next house
-      if (currentHouse === targetHouse) {
-        // Check previous state to see if it was in a different house
-        const prevKey = `ASC:${targetHouse}`;
-        const prevHouse = state.previousHousePositions?.get(prevKey);
-        if (prevHouse !== undefined && prevHouse !== targetHouse) {
-          // ASC was in target house, now check if it's moved to next
-          const nextHouse = ((targetHouse % 12) + 1) as HouseNumber;
-          // We'll update state when applying the rule
-          return true;
-        }
-      }
+      // Get previous ASC house from state
+      // Key "ASC" stores the house number directly
+      const previousAscHouse = state.previousHousePositions?.get('ASC');
 
-      // Check if ASC just left the target house
-      const prevKey = `ASC:${targetHouse}`;
-      const prevHouse = state.previousHousePositions?.get(prevKey);
-      if (prevHouse === targetHouse && currentHouse !== targetHouse) {
+      // Trigger condition: previousAscHouse === targetHouse AND currentAscHouse !== targetHouse
+      // This detects the moment ASC transitions from the target house to another house
+      if (previousAscHouse === targetHouse && currentHouse !== targetHouse) {
         return true;
       }
 
+      // Don't trigger on first frame (when previousAscHouse is undefined)
+      // Don't trigger if ASC is still in target house
+      // Don't trigger if ASC was never in target house
       return false;
     }
 
@@ -306,11 +303,16 @@ function ruleTriggered(
       const currentHouse = getHouseForLongitude(planetLon, chart.houseCusps);
       const targetHouse = trigger.house as HouseNumber;
 
+      if (currentHouse === null) {
+        return false;
+      }
+
       // Check if planet just crossed into target house
-      const prevKey = `${trigger.planet}:${targetHouse}`;
-      const prevHouse = state.previousHousePositions?.get(prevKey);
+      // Key format: planet ID (string) -> house number
+      const prevHouse = state.previousHousePositions?.get(String(trigger.planet));
       
-      if (currentHouse === targetHouse && prevHouse !== targetHouse) {
+      // Trigger when: previous house !== target house AND current house === target house
+      if (currentHouse === targetHouse && prevHouse !== undefined && prevHouse !== targetHouse) {
         return true;
       }
 
@@ -370,12 +372,12 @@ function applyRule(
 
   // Track current positions for next evaluation
   if (chart.houseCusps) {
-    // Track ASC position
+    // Track ASC position (using "ASC" key for consistency)
     const ascLon = chart.angleLongitudes?.get('ASC');
     if (ascLon !== undefined) {
       const ascHouse = getHouseForLongitude(ascLon, chart.houseCusps);
       if (ascHouse !== null) {
-        newState.previousHousePositions.set(`ASC:${ascHouse}`, ascHouse);
+        newState.previousHousePositions.set('ASC', ascHouse);
       }
     }
 
@@ -384,7 +386,7 @@ function applyRule(
       for (const [planetId, lon] of chart.planetLongitudes.entries()) {
         const house = getHouseForLongitude(lon, chart.houseCusps);
         if (house !== null) {
-          newState.previousHousePositions.set(`${planetId}:${house}`, house);
+          newState.previousHousePositions.set(String(planetId), house);
         }
       }
     }
@@ -421,6 +423,42 @@ function applyRule(
       }
       break;
     }
+
+    case 'snapHouseToAngle': {
+      // Snap a house cusp to a specific screen angle
+      const houseCusp = chart.houseCusps?.get(effect.house);
+      if (houseCusp !== undefined) {
+        // Use worldZero/screenZero model for direct mapping
+        newFrame.worldZero = normalizeAngle(houseCusp);
+        newFrame.screenZero = normalizeAngle(effect.screenAngle);
+        // Preserve existing direction and scale if present
+        if (newFrame.direction === undefined) {
+          newFrame.direction = 1; // Default direction
+        }
+        if (newFrame.scale === undefined) {
+          newFrame.scale = 1; // Default scale
+        }
+      }
+      break;
+    }
+
+    case 'snapAnchorToAngle': {
+      // Snap an angle (ASC, MC, etc.) to a specific screen angle
+      const anchorLon = chart.angleLongitudes?.get(effect.anchor);
+      if (anchorLon !== undefined) {
+        // Use worldZero/screenZero model for direct mapping
+        newFrame.worldZero = normalizeAngle(anchorLon);
+        newFrame.screenZero = normalizeAngle(effect.screenAngle);
+        // Preserve existing direction and scale if present
+        if (newFrame.direction === undefined) {
+          newFrame.direction = 1; // Default direction
+        }
+        if (newFrame.scale === undefined) {
+          newFrame.scale = 1; // Default scale
+        }
+      }
+      break;
+    }
   }
 
   // Add rule-specific locks
@@ -448,13 +486,41 @@ export function evalOrientationProgram(
     previousHousePositions: new Map(),
   };
 
-  // Evaluate each rule in order
+  // Ensure previousHousePositions map exists
+  if (!state.previousHousePositions) {
+    state.previousHousePositions = new Map();
+  }
+
+  // Evaluate each rule in order (using previous state to detect transitions)
   for (const rule of rules) {
     if (ruleTriggered(rule, chart, state)) {
       const result = applyRule(rule, frame, locks, chart, state);
       frame = result.frame;
       extraLocks.push(...result.extraLocks);
       state = result.newState;
+    }
+  }
+
+  // Update state with current positions AFTER rule evaluation
+  // This ensures next frame can compare against current positions
+  if (chart.houseCusps && chart.angleLongitudes) {
+    const ascLon = chart.angleLongitudes.get('ASC');
+    if (ascLon !== undefined) {
+      const ascHouse = getHouseForLongitude(ascLon, chart.houseCusps);
+      if (ascHouse !== null) {
+        // Store current ASC house as "ASC" key for easy lookup
+        state.previousHousePositions.set('ASC', ascHouse);
+      }
+    }
+
+    // Track current planet positions
+    if (chart.planetLongitudes) {
+      for (const [planetId, lon] of chart.planetLongitudes.entries()) {
+        const house = getHouseForLongitude(lon, chart.houseCusps);
+        if (house !== null) {
+          state.previousHousePositions.set(String(planetId), house);
+        }
+      }
     }
   }
 
