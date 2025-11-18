@@ -45,3 +45,31 @@ The test page displays 4 different charts:
 - D3.js is loaded from CDN (no local installation needed)
 - A modern browser with ES module support
 
+## Using with JPL Ephemeris
+
+The test page can work with charts rendered from JPL ephemeris data. The data structure is identical to Swiss Ephemeris, so no changes are needed in the frontend code.
+
+To test with JPL ephemeris:
+
+1. Start the backend API with JPL adapter:
+   ```bash
+   cd ../coeus-api
+   export EPHEMERIS_ADAPTER=jpl
+   uvicorn app.main:app --reload --port 8000
+   ```
+
+2. Use `iris-core` to fetch data from the API and render with `aphrodite-d3`:
+   ```typescript
+   import { createApiClient, convertEphemerisToRender, buildIndexes } from '@gaia-tools/iris-core';
+   import { ChartWheel } from '@gaia-tools/aphrodite-d3';
+   
+   const api = createApiClient('http://localhost:8000/api');
+   const ephemerisResponse = await api.render.render({...});
+   const renderData = convertEphemerisToRender(ephemerisResponse);
+   const indexes = buildIndexes(renderData);
+   
+   const chart = new ChartWheel(container, { renderData, indexes, ... });
+   ```
+
+The chart will render identically whether using Swiss or JPL ephemeris data.
+
